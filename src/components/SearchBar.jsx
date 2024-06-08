@@ -17,7 +17,7 @@ const SearchBar = ({ setSearchData }) => {
         size="small"
         onChange={handleInputChange}
       />
-      <IconButton type="submit" aria-label="search">
+      <IconButton>
         <SearchIcon />
       </IconButton>
     </form>

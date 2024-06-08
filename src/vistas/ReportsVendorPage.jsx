@@ -12,6 +12,13 @@ import { useAtomValue, useAtom } from 'jotai';
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import IconButton from '@mui/material/IconButton';
 
+const rows = [
+    { id: 1, nombre: 'Low basketball shoes', fecha: '12/12/2020', precio: 35, vendedor: 'vendedor 1'},
+    { id: 2, nombre: 'Adidas Campus ADV', fecha: '12/12/2020', precio: 42, vendedor:'vendedor 1'},
+    { id: 3, nombre: 'Zapatillas Skate', fecha: '12/12/2020', precio: 45, vendedor: 'vendedor 2'},
+    { id: 4, nombre: 'VL Court 2.0', fecha: '12/12/2020', precio: 16,vendedor: 'vendedor 2'},
+];
+
 export default function ReportsVendorPage(){
     const open = useAtomValue(openAtom);
     const [marca, setMarca] = React.useState('');
@@ -19,6 +26,9 @@ export default function ReportsVendorPage(){
     
     const [fechaFin, setFechaFin] = React.useState(dayjs());
     const [fechaInicio, setFechaInicio] = React.useState(dayjs());
+
+    const [searchProduct, setSearchProduct] = React.useState('');
+    
 
     const handleChangeVendedor = (event) => {
         setVendedor(event.target.value);
@@ -28,6 +38,10 @@ export default function ReportsVendorPage(){
         setMarca(event.target.value);
     };
 
+    const filteredProduct = rows.filter((item) =>
+        item.nombre.toLowerCase().includes(searchProduct.toLowerCase())
+    );
+
     const columns = [
         { field: 'id', headerName: 'Codigo', width: 70 },
         { field: 'nombre', headerName: 'Nombre', width: 174 },
@@ -36,14 +50,6 @@ export default function ReportsVendorPage(){
         { field: 'vendedor', headerName: 'Vendedor', width: 140 },
     ];
       
-    const rows = [
-        { id: 1, nombre: 'Low basketball shoes', fecha: fechaInicio, precio: 35, vendedor: 'vendedor 1'},
-        { id: 2, nombre: 'Adidas Campus ADV', fecha: fechaInicio, precio: 42, vendedor:'vendedor 1'},
-        { id: 3, nombre: 'Zapatillas Skate', fecha: fechaInicio, precio: 45, vendedor: 'vendedor 2'},
-        { id: 4, nombre: 'VL Court 2.0', fecha: fechaInicio, precio: 16,vendedor: 'vendedor 2'},
-      
-    ];
-
     return(
         <Container sx={{ marginTop: '79px', marginLeft: open === false? '40px':'200px'}}>
             <Box display={'flex'} justifyContent={'left'} height={'10vh'}>
@@ -96,7 +102,7 @@ export default function ReportsVendorPage(){
                 </FormControl>
             </Box>
             <Box height={'80vh'} maxWidth={'70vw'}>
-                <Box   display={'flex'}>
+                <Box display={'flex'}>
                     <Stack alignItems={'baseline'} spacing={2} width={'30vw'} flexDirection={'row'}>
                         <IconButton>
                             <PictureAsPdfRoundedIcon sx={{ fontSize: 40 }}/> 
@@ -104,14 +110,14 @@ export default function ReportsVendorPage(){
                         <IconButton>
                             <PictureAsPdfRoundedIcon sx={{ fontSize: 40 }}/> 
                         </IconButton>
-                    </Stack>-
+                    </Stack>
                     <Stack alignItems={'self-end'} spacing={2} m={2} width={'60vw'}>
-                        <SearchBar></SearchBar>
+                        <SearchBar setSearchData={setSearchProduct}></SearchBar>
                     </Stack>
                 </Box>
                 <div style={{display: 'flex', height: 400, justifyContent: 'center'}}>
                     <DataGrid
-                        rows={rows}
+                        rows={filteredProduct}
                         columns={columns}
                         initialState={{
                         pagination: {

@@ -12,6 +12,14 @@ import { useAtomValue, useAtom } from 'jotai';
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import IconButton from '@mui/material/IconButton';
 
+const rows = [
+    { id: 1, nombre: 'Low basketball shoes', local: 'margarita', cantidad: 15},
+    { id: 2, nombre: 'Adidas Campus ADV', local: 'caracas', cantidad: 25},
+    { id: 3, nombre: 'Zapatillas Skate', local: 'caracas', cantidad: 5},
+    { id: 4, nombre: 'VL Court 2.0', local: 'margarita',cantidad: 10},
+  
+];
+
 export default function ReportsLocalPage(){
     const open = useAtomValue(openAtom);
     const [marca, setMarca] = React.useState('');
@@ -28,6 +36,12 @@ export default function ReportsLocalPage(){
         setMarca(event.target.value);
     };
 
+    
+    const [searchProduct, setSearchProduct] = React.useState('');
+    const filteredProduct = rows.filter((item) =>
+        item.nombre.toLowerCase().includes(searchProduct.toLowerCase())
+    );
+
     const columns = [
         { field: 'id', headerName: 'Codigo', width: 70 },
         { field: 'nombre', headerName: 'Nombre', width: 174 },
@@ -35,13 +49,7 @@ export default function ReportsLocalPage(){
         { field: 'cantidad', headerName: 'Cantidad', width: 140 },
     ];
       
-    const rows = [
-        { id: 1, nombre: 'Low basketball shoes', local: 'margarita', cantidad: 15},
-        { id: 2, nombre: 'Adidas Campus ADV', local: 'caracas', cantidad: 25},
-        { id: 3, nombre: 'Zapatillas Skate', local: 'caracas', cantidad: 5},
-        { id: 4, nombre: 'VL Court 2.0', local: 'margarita',cantidad: 10},
-      
-    ];
+
 
     return(
         <Container sx={{ marginTop: '79px', marginLeft: open === false? '40px':'200px'}}>
@@ -105,13 +113,13 @@ export default function ReportsLocalPage(){
                         </IconButton>
                     </Stack>
                     <Stack alignItems={'self-end'} spacing={2} m={2} width={'60vw'}>
-                        <SearchBar></SearchBar>
+                        <SearchBar setSearchData={setSearchProduct}></SearchBar>
                     </Stack>
                 </Box>
 
                 <div style={{display: 'flex', height: 400, justifyContent: 'center'}}>
                     <DataGrid
-                        rows={rows}
+                        rows={filteredProduct}
                         columns={columns}
                         initialState={{
                         pagination: {
