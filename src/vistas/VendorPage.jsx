@@ -16,7 +16,6 @@ import { DataGrid } from '@mui/x-data-grid';
 import { productoAtom } from '../atoms/productoAtom';
 
 
-
 export default function VendorPage(){
 
     const [searchCliente, setSearchCliente] = useState('');
@@ -26,24 +25,28 @@ export default function VendorPage(){
     const navigate = useNavigate();
     const open = useAtomValue(openAtom);
 
+    const storedUserData = localStorage.getItem('user')
+
+    if (storedUserData) {
+      const userStoredData = JSON.parse(storedUserData)
+    } else {
+      console.log('User data not found in local storage')
+    }
+
     const nuevoClienteModal = useAtomValue(clienteAtom)
     const [cliente, setCliente] = React.useState(
         clientesList
     );
 
     const handleSubmit = (event) => {
-        const insertAt = 0; // Podría ser cualquier índice
-        const nextcliente = [
-        // Elementos antes del punto de inserción:
-        ...cliente.slice(0, insertAt),
-        // Nuevo ítem:
+        const insertAt = 0; 
+        const nextcliente = [ ...cliente.slice(0, insertAt),
         { 
             cedula: parseInt(nuevoClienteModal.cedula), 
             nombre: nuevoClienteModal.nombre, 
             telefono: parseInt(nuevoClienteModal.telefono), 
             direccion: nuevoClienteModal.direccion,
         },
-        // Elementos después del punto de inserción:
         ...cliente.slice(insertAt)
         ]; setCliente(nextcliente);
         console.log('actuliza cliente',cliente);
@@ -55,11 +58,9 @@ export default function VendorPage(){
     );
 
     const handleProducto = (event) => {
-        const insertAt = 0; // Podría ser cualquier índice
+        const insertAt = 0; 
         const nextProducto = [
-        // Elementos antes del punto de inserción:
         ...producto.slice(0, insertAt),
-        // Nuevo ítem:
         { 
             id: parseInt(nuevoProductoModal.id), 
             nombre: nuevoProductoModal.nombre, 
@@ -67,7 +68,6 @@ export default function VendorPage(){
             talla: nuevoProductoModal.talla,
             cantidad: nuevoProductoModal.cantidad,
         },
-        // Elementos después del punto de inserción:
         ...producto.slice(insertAt)
         ]; setProducto(nextProducto);
         console.log('actuliza producto',producto);
@@ -79,11 +79,7 @@ export default function VendorPage(){
 
     const local = ['Nueva Esparta', 'Caracas', 'Zulia', 'Merida', 'Falcon'];
 
-    //const filteredLocal = local.filter((item) =>
-    // item.toLowerCase().includes(searchLocal.toLowerCase())
-    // );
     
-
     return (
         <Container sx={{display:'flex', marginTop: '79px', marginLeft: open === false? '40px':'100px'}}>
             <BasicModal abrir={openClienteModal} setOpen={setOpenClienteModal} submit={handleSubmit}/>
@@ -130,39 +126,39 @@ export default function VendorPage(){
                         {
                             'Productos'
                         }
-                    <div style={{display: 'flex', height: 400, justifyContent: 'center', marginTop: '20px'}}>
-                        <DataGrid
-                        rows={producto}
-                        columns={columns}
-                        initialState={{
-                        pagination: {
-                            paginationModel: { page: 0, pageSize: 5 },
-                        },
-                        }}
-                        pageSizeOptions={[5, 10]}
-                        checkboxSelection
-                    />
-                    </div>
+                        <div style={{display: 'flex', height: 400, justifyContent: 'center', marginTop: '20px'}}>
+                            <DataGrid
+                                rows={producto}
+                                columns={columns}
+                                initialState={{
+                                pagination: {
+                                    paginationModel: { page: 0, pageSize: 5 },
+                                },
+                                }}
+                                pageSizeOptions={[5, 10]}
+                                checkboxSelection
+                            />
+                        </div>
                     </List>
                     <h2 style={{textAlign: 'right', marginRight:'10px'}}>Total: {'100'}$</h2>
                     <Stack direction={'row'} spacing={2}>
-                    <Button
-                    onClick={() => {
-                        setSelectCliente('');
-                    }}
-                    variant="contained">Limpiar</Button>
-                    <Button
-                    onClick={() => {
-                        setOpenProductoModal(true);
-                    }}
-                    variant="contained">Agregar Producto</Button>
-                    <Button
-                    variant="contained"
-                    onClick={() => {
-                        
-                    }}
-                    >Guardar</Button>
-                </Stack>
+                        <Button
+                        onClick={() => {
+                            setSelectCliente('');
+                        }}
+                        variant="contained">Limpiar</Button>
+                        <Button
+                        onClick={() => {
+                            setOpenProductoModal(true);
+                        }}
+                        variant="contained">Agregar Producto</Button>
+                        <Button
+                        variant="contained"
+                        onClick={() => {
+                            
+                        }}
+                        >Guardar</Button>
+                    </Stack>
                 </div>
                 }
             </Box>

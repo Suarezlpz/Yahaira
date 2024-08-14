@@ -18,9 +18,128 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { openAtom } from '../atoms/OpenAtom';
 import { Container } from '@mui/material';
+import { userDataAtom } from '../atoms/UserDataAtom';
+
+
+export default function MiniDrawer() {
+  const theme = useTheme();
+  const [open, setOpen] = useAtom(openAtom);
+  const userData = useAtomValue(userDataAtom)
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <Container>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBar position="fixed" open={open}>
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={{
+                marginRight: 5,
+                ...(open && { display: 'none' }),
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              Mini variant drawer
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer variant="permanent" open={open}>
+          <DrawerHeader>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            </IconButton>
+          </DrawerHeader>
+          <Divider />
+          <List>
+              <ListItem disablePadding sx={{ display: 'block' }}>
+                {userData.role === 'admin' || userData.role === 'seller'
+                ? <ListItemButton
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : 'auto',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <InboxIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary={<NavLink to='/home'>Vendedor</NavLink>} sx={{ opacity: open ? 1 : 0 }} />
+                  </ListItemButton>
+                : ''}
+                {userData.role === 'admin'
+                ? <ListItemButton
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : 'auto',
+                        justifyContent: 'center',
+                      }}
+                    >
+                        <InboxIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary={<NavLink to='/home/reporteVendedor'>Reportes de Ventas</NavLink>} sx={{ opacity: open ? 1 : 0 }} />
+                  </ListItemButton> 
+                :''}
+                {userData.role === 'admin' || userData.role === 'depositary'
+                ? <ListItemButton
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : 'auto',
+                        justifyContent: 'center',
+                      }}
+                    >
+                    <InboxIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary={userData.role === 'admin'? <NavLink to='/home/reporteLocal'>Reporte de Inventario</NavLink> : userData.role === 'depositary'? <NavLink to='/home'>Reporte de Inventario</NavLink>: ''} sx={{ opacity: open ? 1 : 0 }} />
+                  </ListItemButton>
+                :''}
+
+              </ListItem>
+          </List>
+        </Drawer>
+      </Box>
+      <Box>
+        <Outlet></Outlet>
+      </Box>
+    </Container>
+  );
+}
 
 
 const drawerWidth = 240;
@@ -89,112 +208,3 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
   }),
 );
-
-export default function MiniDrawer() {
-  const theme = useTheme();
-  const [open, setOpen] = useAtom(openAtom);
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-  return (
-    <Container>
-      <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
-        <AppBar position="fixed" open={open}>
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              sx={{
-                marginRight: 5,
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              Mini variant drawer
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <DrawerHeader>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            </IconButton>
-          </DrawerHeader>
-          <Divider />
-          <List>
-              <ListItem disablePadding sx={{ display: 'block' }}>
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? 'initial' : 'center',
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : 'auto',
-                      justifyContent: 'center',
-                    }}
-                  >
-                      <InboxIcon/>
-                  </ListItemIcon>
-                  <ListItemText primary={<NavLink to='/'>Vendedor</NavLink>} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? 'initial' : 'center',
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : 'auto',
-                      justifyContent: 'center',
-                    }}
-                  >
-                      <InboxIcon/>
-                  </ListItemIcon>
-                  <ListItemText primary={<NavLink to='/reporteVendedor'>Reportes de Ventas</NavLink>} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? 'initial' : 'center',
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : 'auto',
-                      justifyContent: 'center',
-                    }}
-                  >
-                      <InboxIcon/>
-                  </ListItemIcon>
-                  <ListItemText primary={<NavLink to='/reporteLocal'>Reporte de Inventario</NavLink>} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-              </ListItem>
-          </List>
-        </Drawer>
-      </Box>
-      <Box>
-        <Outlet></Outlet>
-      </Box>
-    </Container>
-  );
-}

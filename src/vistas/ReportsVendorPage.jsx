@@ -101,7 +101,7 @@ export default function ReportsVendorPage(){
                     </Select>
                 </FormControl>
             </Box>
-            <Box height={'80vh'} maxWidth={'70vw'}>
+            <Box height={'81.9vh'} maxWidth={'70vw'}>
                 <Box display={'flex'}>
                     <Stack alignItems={'baseline'} spacing={2} width={'30vw'} flexDirection={'row'}>
                         <IconButton>
