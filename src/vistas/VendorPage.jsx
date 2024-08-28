@@ -25,14 +25,6 @@ export default function VendorPage(){
     const navigate = useNavigate();
     const open = useAtomValue(openAtom);
 
-    const storedUserData = localStorage.getItem('user')
-
-    if (storedUserData) {
-      const userStoredData = JSON.parse(storedUserData)
-    } else {
-      console.log('User data not found in local storage')
-    }
-
     const nuevoClienteModal = useAtomValue(clienteAtom)
     const [cliente, setCliente] = React.useState(
         clientesList

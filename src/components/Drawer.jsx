@@ -21,13 +21,14 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAtom, useAtomValue } from 'jotai'
 import { openAtom } from '../atoms/OpenAtom';
 import { Container } from '@mui/material';
-import { userDataAtom } from '../atoms/UserDataAtom';
+import { storage } from '../utils/Storage';
 
 
 export default function MiniDrawer() {
   const theme = useTheme();
   const [open, setOpen] = useAtom(openAtom);
-  const userData = useAtomValue(userDataAtom)
+  const userData = storage.get('user')
+  const navigate = useNavigate();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -71,6 +72,9 @@ export default function MiniDrawer() {
               <ListItem disablePadding sx={{ display: 'block' }}>
                 {userData.role === 'admin' || userData.role === 'seller'
                 ? <ListItemButton
+                    onClick={() =>{
+                      navigate('/home')
+                    }}
                     sx={{
                       minHeight: 48,
                       justifyContent: open ? 'initial' : 'center',
@@ -86,31 +90,125 @@ export default function MiniDrawer() {
                     >
                       <InboxIcon/>
                     </ListItemIcon>
-                    <ListItemText primary={<NavLink to='/home'>Vendedor</NavLink>} sx={{ opacity: open ? 1 : 0 }} />
+                    <ListItemText primary={'Vendedor'} sx={{ opacity: open ? 1 : 0 }} />
                   </ListItemButton>
                 : ''}
                 {userData.role === 'admin'
-                ? <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? 'initial' : 'center',
-                      px: 2.5,
-                    }}
-                  >
-                    <ListItemIcon
+                ? <>
+                    <ListItemButton
+                      onClick={() =>{
+                        navigate('/home/tiendas')
+                      }}
                       sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : 'auto',
-                        justifyContent: 'center',
+                        minHeight: 48,
+                        justifyContent: open ? 'initial' : 'center',
+                        px: 2.5,
                       }}
                     >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : 'auto',
+                          justifyContent: 'center',
+                        }}
+                      >
                         <InboxIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary={<NavLink to='/home/reporteVendedor'>Reportes de Ventas</NavLink>} sx={{ opacity: open ? 1 : 0 }} />
-                  </ListItemButton> 
+                      </ListItemIcon>
+                      <ListItemText primary={'Tiendas'} sx={{ opacity: open ? 1 : 0 }} />
+                    </ListItemButton>
+                    <ListItemButton
+                      onClick={() =>{
+                        navigate('/home/users')
+                      }}
+                      sx={{
+                        minHeight: 48,
+                        justifyContent: open ? 'initial' : 'center',
+                        px: 2.5,
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : 'auto',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <InboxIcon/>
+                      </ListItemIcon>
+                      <ListItemText primary={'Usuarios'} sx={{ opacity: open ? 1 : 0 }} />
+                    </ListItemButton>
+                    <ListItemButton
+                      onClick={() =>{
+                        navigate('/home/brands')
+                      }}
+                      sx={{
+                        minHeight: 48,
+                        justifyContent: open ? 'initial' : 'center',
+                        px: 2.5,
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : 'auto',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <InboxIcon/>
+                      </ListItemIcon>
+                      <ListItemText primary={'Marcas'} sx={{ opacity: open ? 1 : 0 }} />
+                    </ListItemButton>
+                    <ListItemButton
+                      onClick={() =>{
+                        navigate('/home/product_types')
+                      }}
+                      sx={{
+                        minHeight: 48,
+                        justifyContent: open ? 'initial' : 'center',
+                        px: 2.5,
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : 'auto',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <InboxIcon/>
+                      </ListItemIcon>
+                      <ListItemText primary={'Tipo de Producto'} sx={{ opacity: open ? 1 : 0 }} />
+                    </ListItemButton>
+                    <ListItemButton
+                      onClick={() =>{
+                        navigate('/home/reporteVendedor')
+                      }}
+                      sx={{
+                        minHeight: 48,
+                        justifyContent: open ? 'initial' : 'center',
+                        px: 2.5,
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : 'auto',
+                          justifyContent: 'center',
+                        }}
+                      >
+                          <InboxIcon/>
+                      </ListItemIcon>
+                      <ListItemText primary={'Reportes de Venta'} sx={{ opacity: open ? 1 : 0 }} />
+                    </ListItemButton>
+                  </>
                 :''}
                 {userData.role === 'admin' || userData.role === 'depositary'
                 ? <ListItemButton
+                    onClick={() =>{
+                      
+                      userData.role === 'admin'? navigate('/home/reporteLocal') : userData.role === 'depositary'? navigate('/home'): ''
+
+                    }}
                     sx={{
                       minHeight: 48,
                       justifyContent: open ? 'initial' : 'center',
@@ -126,9 +224,32 @@ export default function MiniDrawer() {
                     >
                     <InboxIcon/>
                     </ListItemIcon>
-                    <ListItemText primary={userData.role === 'admin'? <NavLink to='/home/reporteLocal'>Reporte de Inventario</NavLink> : userData.role === 'depositary'? <NavLink to='/home'>Reporte de Inventario</NavLink>: ''} sx={{ opacity: open ? 1 : 0 }} />
+                    <ListItemText primary={'Reporte de Inventario'} sx={{ opacity: open ? 1 : 0 }} />
                   </ListItemButton>
                 :''}
+                <ListItemButton
+                    onClick={() =>{
+                      console.log('jelou')
+                      storage.clear()
+                      navigate('/')
+                    }}
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : 'auto',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <InboxIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary={'Salir'} sx={{ opacity: open ? 1 : 0 }} />
+                  </ListItemButton>
 
               </ListItem>
           </List>

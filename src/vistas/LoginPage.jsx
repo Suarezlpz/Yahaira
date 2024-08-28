@@ -9,26 +9,28 @@ import { Login } from '../services/LoginServices'
 import { Password } from '@mui/icons-material';
 import { useAtom, useAtomValue } from 'jotai';
 import { userDataAtom } from '../atoms/UserDataAtom';
+import { storage } from '../utils/Storage';
 
 export default function LoginPage() {
 
     const [showPassword, setShowPassword] = React.useState(false);
     const [userName, setUserName] = React.useState('')
     const [contraseña, setContraseña] = React.useState('')
-    const [userData, setUserData] = useAtom(userDataAtom)
+    const [userData, setUserData] = React.useState('')
     const navigate = useNavigate();
 
     function handleClick() {
         Login({
             email: userName, 
             password: contraseña})
-        .then(datos => setUserData({...userData,
-            role: datos.role,
-            token: datos.token,
-        }))
+        .then(datos => storage.set('user', datos))
         .catch(datos => console.log(datos))
 
-        navigate('/home')
+
+        setUserData(storage.get('user'))
+        if(storage.get('user') != null){
+            navigate('/home')
+        }
     }
 
     return (

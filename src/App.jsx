@@ -13,17 +13,26 @@ import MiniDrawer from './components/Drawer';
 import '../src/App.css'
 import FreeSoloCreateOptionDialog from './components/AutocompleteEjemplo'
 import { useAtom, useAtomValue } from 'jotai';
-import { userDataAtom } from './atoms/UserDataAtom';
+import TiendasPage from './vistas/TiendasPage';
+import { storage } from './utils/Storage';
+import ProductTypesPage from './vistas/ProductTypesPage';
+import BrandsPage from './vistas/BrandsPage';
+import UsuariosPage from './vistas/UsuariosPage';
 
-function App() {
+function App({inInitiallyLogged}) {
+  const [isLogged, setIsLogged] = useState (inInitiallyLogged)
 
-  const userData = useAtomValue(userDataAtom);
+  const userData = storage.get('user')
 
   const adminRoute = (
     <Route path='/home' element={<MiniDrawer/>}>
       <Route index element={<VendorPage/>}/>
       <Route path='reporteVendedor' element={<ReportsVendorPage/>}/>
       <Route path='reporteLocal' element={<ReportsLocalPage/>}/>
+      <Route path='tiendas' element={<TiendasPage/>}/>
+      <Route path='users' element={<UsuariosPage/>}/>
+      <Route path='brands' element={<BrandsPage/>}/>
+      <Route path='product_types' element={<ProductTypesPage/>}/>
       <Route path='autocomplete' element={<FreeSoloCreateOptionDialog/>}/>
     </Route>
   )
@@ -41,8 +50,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<LoginPage/>}/>
-        {userData.role === 'admin'? adminRoute : userData.role === 'seller'? sellerRoute : userData.role === 'depositary'? depositaryRoute: ''}
+        {isLogged? (userData.role === 'admin'? adminRoute : userData.role === 'seller'? sellerRoute : userData.role === 'depositary'? depositaryRoute: ''):<Route path='/' element={<LoginPage/>}/>}
       </Routes>
   </BrowserRouter>
   )
