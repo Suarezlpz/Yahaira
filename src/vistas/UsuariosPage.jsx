@@ -203,7 +203,7 @@ const Example = () => {
     },
     renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
-        <DialogTitle variant="h4">Editar Ususario</DialogTitle>
+        <DialogTitle variant="h4">Editar Usuario</DialogTitle>
         <DialogContent
           sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
         >

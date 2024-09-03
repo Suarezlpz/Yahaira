@@ -13,36 +13,24 @@ import IconButton from '@mui/material/IconButton';
 import { userDataAtom } from '../atoms/UserDataAtom';
 import { GetProducts } from '../services/GetProducts';
 import { MaterialReactTable } from 'material-react-table';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import _ from 'lodash';
 import AgregarProductoInventario from '../components/AgregarProductoInventario';
-
+import NuevoProductoModal from '../components/NuevoProductoModal';
 import Fab from '@mui/material/Fab';
 import AddBoxIcon from '@mui/icons-material/AddBox';
-
 
 
 export default function ReportsLocalPage(){
     const open = useAtomValue(openAtom);
     const [marca, setMarca] = React.useState('');
     const [local, setLocal] = React.useState('');
-    const [openProductoModal, setOpenProductoModal] = React.useState(false);
+    const [openNuevoProductoModal, setOpenNuevoProductoModal] = React.useState(false);
     const [groupsPrecessed, setGroupsPrecessed] = React.useState([]);
+
+
     let tempRows = []
     let newData = []
     
-    const [fechaFin, setFechaFin] = React.useState(dayjs());
-    const [fechaInicio, setFechaInicio] = React.useState(dayjs());
-
-    const handleChangeLocal = (event) => {
-        setLocal(event.target.value);
-    };
-
-    const handleChangeMarca = (event) => {
-        setMarca(event.target.value);
-    };
-
-    const [searchProduct, setSearchProduct] = React.useState('');
 
     const userData = useAtomValue(userDataAtom)
     const [products, setProducts] = React.useState([''])
@@ -65,10 +53,11 @@ export default function ReportsLocalPage(){
                 id: item.id,
                 name: item.name,
                 upc: item.upc,
-                amount: sku.amount,
+                amount: sku.available_in_stores[0].amount,
                 price: sku.price,
                 sku: sku.sku,
-                value: sku.attribute_options[0].value,
+                color: sku.attribute_options[0].value,
+                talla: sku.attribute_options[1].value,
             }));
         }).flat();
     }
@@ -84,7 +73,7 @@ export default function ReportsLocalPage(){
             return {
                 upc: k3,
                 subRows: v3.map((v4) => ({
-                    upc: v4.sku + ' - Color: '+ v4.value,
+                    upc: v4.sku + ' - Talla: '+ v4.talla +' - Color: '+  v4.color,
                     amount: v4.amount,
                     price: v4.price,
                 }))
@@ -111,70 +100,7 @@ export default function ReportsLocalPage(){
 
     return(
         <Container sx={{ marginTop: '79px', marginLeft: open === false? '40px':'200px'}}>
-            <Box display={'flex'} justifyContent={'left'} height={'10vh'}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <Stack direction={'row'} spacing={2} margin={4}>
-                        <DatePicker
-                        label="Fecha Inicio"
-                        value={fechaInicio}
-                        onChange={(newValue) => setFechaInicio(newValue)}
-                        />
-                        <DatePicker
-                        label="Fecha Fin"
-                        value={fechaFin}
-                        onChange={(newValue) => setFechaFin(newValue)}
-                        />
-                    </Stack>
-                </LocalizationProvider>
-                
-                <FormControl sx={{ marginTop: 4, minWidth: 130, maxWidth: 200}}>
-                    <InputLabel id="demo-simple-select-autowidth-label">Marca</InputLabel>
-                    <Select
-                    value={marca}
-                    onChange={handleChangeMarca}
-                    autoWidth
-                    label="Marca"
-                    >
-                    <MenuItem value="">
-                        <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={10}>Adidas</MenuItem>
-                    <MenuItem value={21}>ReeBok</MenuItem>
-                    <MenuItem value={22}>NewBalance</MenuItem>
-                    </Select>
-                </FormControl>
-                <FormControl sx={{ m: 4, minWidth: 130, maxWidth: 200}}>
-                    <InputLabel id="demo-simple-select-autowidth-label">Local</InputLabel>
-                    <Select
-                    value={local}
-                    onChange={handleChangeLocal}
-                    autoWidth
-                    label="Local"
-                    >
-                    <MenuItem value="">
-                        <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={23}>Todos</MenuItem>
-                    <MenuItem value={24}>Margarita</MenuItem>
-                    <MenuItem value={25}>Caracas</MenuItem>
-                    </Select>
-                </FormControl>
-            </Box>
-            <Box height={'81.9vh'} maxWidth={'70vw'}>
-                <Box display={'flex'}>
-                    <Stack alignItems={'baseline'} spacing={2} width={'30vw'} flexDirection={'row'}>
-                        <IconButton>
-                            <PictureAsPdfRoundedIcon sx={{ fontSize: 40 }}/> 
-                        </IconButton>
-                        <IconButton>
-                            <PictureAsPdfRoundedIcon sx={{ fontSize: 40 }}/> 
-                        </IconButton>
-                    </Stack>
-                    <Stack alignItems={'self-end'} spacing={2} m={2} width={'60vw'}>
-                        <SearchBar setSearchData={setSearchProduct}></SearchBar>
-                    </Stack>
-                </Box>
-
+            <Box height={'92vh'} maxWidth={'70vw'}>
                 <Box flexGrow={1} sx={{ height: '500px', minWidth: '50vw', maxWidth: '90vw'}}>
                     <MaterialReactTable
                         enableFilters={false}
@@ -190,12 +116,12 @@ export default function ReportsLocalPage(){
                 </Box>
                 <Fab color="primary" sx={{position: 'absolute', bottom: 16, right: 18,}} 
                     aria-label="add" onClick={() =>{
-                        setOpenProductoModal(true);
+                        setOpenNuevoProductoModal(true);
                     }}>
                     <AddBoxIcon />
                 </Fab>
             </Box>
-            <AgregarProductoInventario abrir={openProductoModal} setOpen={setOpenProductoModal}/>
+            <NuevoProductoModal abrir={openNuevoProductoModal} setOpen={setOpenNuevoProductoModal}/>
         </Container>
     )
 }
