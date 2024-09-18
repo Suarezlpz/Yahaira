@@ -30,6 +30,8 @@ import {
   useUpdateTienda,
   useDeleteTienda,
 } from '../services/TiendasServices';
+import CrearTiendaModal from '../components/CrearTiendaModal';
+import EditarTiendaModal from '../components/EditarTiendaModal';
 
 const validateRequired = (value) => !!value.length;
 function validateTienda(store) {
@@ -45,7 +47,9 @@ const Example = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const userData = storage.get('user');
   const token = userData.token;
-  const [tiendas, setTiendas] = useState([]);
+  const [tiendas, setTiendas] = useState([]);  
+  const [openEditarTiendaModal, setOpenEditarTiendaModal] = useState(false);
+  const [openCrearTiendaModal, setOpenCrearTiendaModal] = useState(false);
 
   const columns = useMemo(
     () => [
@@ -90,37 +94,6 @@ const Example = () => {
     }
   }, [fetchedData, tiendas]);
 
-  //call CREATE hook
-  const { mutateAsync: createTienda, isPending: isCreatingTienda } = useCreateTienda({token});
-
-  //CREATE action
-  const handleCreateTienda = async ({ values, table }) => {
-    const newValidationErrors = validateTienda(values);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
-    await createTienda(values);
-    table.setCreatingRow(null); //exit creating mode
-  };
-
-  //call UPDATE hook
-  const { mutateAsync: updateTienda, isPending: isUpdatingTienda } =
-  useUpdateTienda({token});
-
-  //UPDATE action
-  const handleSaveTienda = async ({ values, table }) => {
-    const newValidationErrors = validateTienda(values);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
-    await updateTienda(values);
-    table.setEditingRow(null); //exit editing mode
-  };
-
   //call DELETE hook
   const { mutateAsync: deleteTienda, isPending: isDeletingTienda } =
   useDeleteTienda({token});
@@ -132,7 +105,6 @@ const Example = () => {
     }
   };
 
-  
   const table = useMaterialReactTable({
     columns,
     data: tiendas,
@@ -142,21 +114,11 @@ const Example = () => {
     enableFilters: false,
     enableDensityToggle: false,
     getRowId: (row) => row.id,
-    onCreatingRowSave: handleCreateTienda,
     onCreatingRowCancel: () => setValidationErrors({}),
-    onEditingRowSave: handleSaveTienda,
     onEditingRowCancel: () => setValidationErrors({}),
-    renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
+    renderEditRowDialogContent: ({ table, row,  }) => (
       <>
-        <DialogTitle variant="h4">Editar Tienda</DialogTitle>
-        <DialogContent
-          sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
-        >
-          {internalEditComponents} {/* or render custom edit components here */}
-        </DialogContent>
-        <DialogActions>
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </DialogActions>
+        <EditarTiendaModal abrir={openEditarTiendaModal}  table={table} row={row} setOpen={setOpenEditarTiendaModal}/>   
       </>
     ),
     muiToolbarAlertBannerProps: isLoadingTiendaError
@@ -173,7 +135,9 @@ const Example = () => {
     renderRowActions: ({ row, table }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Editar">
-          <IconButton onClick={() => table.setEditingRow(row)}>
+          <IconButton onClick={() => {
+            setOpenEditarTiendaModal(true);
+            table.setEditingRow(row)}}>
             <EditIcon/>
           </IconButton>
         </Tooltip>
@@ -184,24 +148,12 @@ const Example = () => {
         </Tooltip>
       </Box>
     ),
-    renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
-      <>
-        <DialogTitle variant="h4">Crear Nueva Tienda</DialogTitle>
-        <DialogContent
-          sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-        >
-          {internalEditComponents} {/* or render custom edit components here */}
-        </DialogContent>
-        <DialogActions>
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </DialogActions>
-      </>
-    ),
-    renderTopToolbarCustomActions: ({ table }) => (
-      <Button
+    renderTopToolbarCustomActions: ({ table, row }) => (
+      <><Button
         variant="contained"
         onClick={() => {
-          table.setCreatingRow(true); //simplest way to open the create row modal with no default values
+          setOpenCrearTiendaModal(true);
+          //simplest way to open the create row modal with no default values
           //or you can pass in a row object to set default values with the `createRow` helper function
           // table.setCreatingRow(
           //   createRow(table, {
@@ -212,6 +164,8 @@ const Example = () => {
       >
         Crear Tienda
       </Button>
+        <CrearTiendaModal abrir={openCrearTiendaModal}  table={table} row={row} setOpen={setOpenCrearTiendaModal}/>    
+      </>
     ),
     initialState: {
       density:'compact',
@@ -222,7 +176,7 @@ const Example = () => {
     },
     state: {
       isLoading: isLoadingTienda,
-      isSaving: isCreatingTienda || isUpdatingTienda || isDeletingTienda,
+      isSaving: isDeletingTienda,
       showAlertBanner: isLoadingTiendaError,
       showProgressBars: isFetchingTienda,
     },

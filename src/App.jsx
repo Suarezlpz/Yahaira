@@ -18,6 +18,8 @@ import { storage } from './utils/Storage';
 import ProductTypesPage from './vistas/ProductTypesPage';
 import BrandsPage from './vistas/BrandsPage';
 import UsuariosPage from './vistas/UsuariosPage';
+import ClientsPage from './vistas/ClientsPage';
+import AttributesPage from './vistas/AttributePage';
 
 function App({inInitiallyLogged}) {
   const [isLogged, setIsLogged] = useState (inInitiallyLogged)
@@ -33,6 +35,8 @@ function App({inInitiallyLogged}) {
       <Route path='users' element={<UsuariosPage/>}/>
       <Route path='brands' element={<BrandsPage/>}/>
       <Route path='product_types' element={<ProductTypesPage/>}/>
+      <Route path='attributes' element={<AttributesPage/>}/>
+      <Route path='clients' element={<ClientsPage/>}/>
       <Route path='autocomplete' element={<FreeSoloCreateOptionDialog/>}/>
     </Route>
   )

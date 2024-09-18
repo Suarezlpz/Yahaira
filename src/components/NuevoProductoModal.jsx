@@ -11,6 +11,7 @@ import { useGetProductTypes } from '../services/ProductTypesServices';
 import { useGetBrands } from '../services/BrandsServices';
 import { useGetTiendas } from '../services/TiendasServices';
 import { CreateProducts } from '../services/GetProducts';
+import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Save';
 import {
     QueryClient,
@@ -20,6 +21,7 @@ import {
     useQueryClient,
 } from '@tanstack/react-query';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useAtom, useAtomValue } from 'jotai';
 
 const style = {
   position: 'absolute',
@@ -36,7 +38,7 @@ const style = {
 };
 
 
-const Example = () => {
+const Example = ({abrir = false, setOpen }) => {
     const userDataToken = storage.get('user');
     const token = userDataToken.token;
     const [name, setName] = React.useState('');
@@ -45,17 +47,22 @@ const Example = () => {
     const [brands, setBrands] = React.useState([]);
     const [brandSelected, setBrandSelected] = React.useState([])
     const [tiendas, setTiendas] = React.useState();
-    const [skus, setSkus] = React.useState([]);
-    const [arreglo, setArreglo] = React.useState([
-        {sku: '', price: '', cantidad:'', tienda:'',}
-    ])
-    let tempNewProduct = {
+    const [skus, setSkus] = React.useState([{sku: '', price: '', cantidad:'', tienda:''}]);
+
+    const handleClose = () => {
+        setOpen(false)
+        setName('')
+        setPrpductTypeSelected('')
+        setBrandSelected('')
+        setSkus([{sku:'', price:'', cantidad:'', tienda:''}])
+    }
+
+    const [newProduct, setNewProduct] = React.useState({
         'name': name,
         'brand': brandSelected,
         'type': productTypeSelected,
         'skus': skus,
-    }
-
+    })
 
     const {
         data: fetchedPreodutTypes = [],
@@ -100,16 +107,28 @@ const Example = () => {
             })
             setTiendas(tempTienda)
         }
-        setSkus(arreglo);
-    }, [fetchedBrands, fetchedPreodutTypes, arreglo, fetchedTienda]);
+    }, [fetchedBrands, fetchedPreodutTypes, skus, fetchedTienda]);
+
+    
+    const handleCreateProduct = async () => {
+        await CreateProducts({data: newProduct})
+        handleClose()
+    };
 
 
     return(
+        <Modal
+        open={abrir}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        >
         <Box textAlign={'center'} sx={style}>
             <Box sx={{ display: 'flex', flexDirection: 'row'}}>
                 <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
                     <TextField
                         label="Nombre"
+                        variant='standard'
                         id="outlined-start-adornment"
                         sx={{ width: '25ch' }}
                         value={name}
@@ -121,6 +140,7 @@ const Example = () => {
                 <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
                     <TextField
                         label="UPC"
+                        variant='standard'
                         id="outlined-start-adornment"
                         sx={{ width: '25ch' }}
                     />
@@ -135,7 +155,7 @@ const Example = () => {
                         onChange={(event, newValue) => {
                             setBrandSelected(newValue.id);
                         }}
-                        renderInput={(params) => <TextField {...params} label="Marca" />}
+                        renderInput={(params) => <TextField {...params} variant='standard' label="Marca" />}
                     />
                 </FormControl>
             </Box>
@@ -148,12 +168,11 @@ const Example = () => {
                         onChange={(event, newValue) => {
                             setPrpductTypeSelected(newValue.id);
                         }}
-                        renderInput={(params) => <TextField {...params} label="Tipo" />}
+                        renderInput={(params) => <TextField {...params} variant='standard' label="Tipo" />}
                     />
                 </FormControl>
             </Box>
-            <Box maxHeight={'400px'} minHeight={'200px'} sx={{overflowY: 'scroll', scrollbarColor:'blue'
-            }}>
+            <Box maxHeight={'400px'} minHeight={'200px'} sx={{overflowY: 'scroll', scrollbarColor:'blue'}}>
                 {skus.map((item, index) => {
                     return<>
                     <Box>
@@ -162,10 +181,11 @@ const Example = () => {
                                 <TextField
                                     label="SKU"
                                     id={index + 'sku'}
+                                    variant='standard'
                                     value={item.sku}
                                     onChange={(e) => {
 
-                                        setArreglo(prev => {
+                                        setSkus(prev => {
               
                                           let conf = [ ...prev ]
               
@@ -179,11 +199,12 @@ const Example = () => {
                             <FormControl sx={{ m: 1, width: '20vw' }} variant="outlined">
                             <TextField
                                 label="Precio"
-                                id={index + 'Precio'}   
+                                id={index + 'Precio'}
+                                variant='standard'   
                                 value={item.price}
                                 onChange={(e) => {
 
-                                    setArreglo(prev => {
+                                    setSkus(prev => {
           
                                       let conf = [ ...prev ]
           
@@ -199,9 +220,10 @@ const Example = () => {
                                 label="Cantidad"
                                 id={index + 'Cantidad'}
                                 value={item.cantidad}
+                                variant='standard'
                                 onChange={(e) => {
 
-                                    setArreglo(prev => {
+                                    setSkus(prev => {
           
                                       let conf = [ ...prev ]
           
@@ -219,7 +241,7 @@ const Example = () => {
                                 options={tiendas}
                                 getOptionLabel={(option) => option.name}
                                 onChange={(event, newValue) => {
-                                    setArreglo(prev => {
+                                    setSkus(prev => {
           
                                       let conf = [ ...prev ]
           
@@ -228,12 +250,12 @@ const Example = () => {
                                         return conf
                                     })
                                 }}
-                                renderInput={(params) => <TextField {...params} label="Tienda" />}
+                                renderInput={(params) => <TextField {...params} variant='standard' label="Tienda" />}
                                 />
                             </FormControl>
                             <IconButton   
                             onClick={() => {
-                                setArreglo(prev => {
+                                setSkus(prev => {
                                 let conf = [...prev]
                                 conf.splice(index, 1);
 
@@ -250,7 +272,7 @@ const Example = () => {
             <Box height={'5vh'}></Box>
             <Fab color="primary" sx={{position: 'absolute', bottom: 16, right: 18,}}
                 aria-label="add" onClick={() =>{
-                    setArreglo(prev => {
+                    setSkus(prev => {
 
                         let conf = [...prev]
       
@@ -264,37 +286,33 @@ const Example = () => {
                 <AddBoxIcon />
             </Fab>
             <Fab color="primary" sx={{position: 'absolute', bottom: 16, right: 80,}} aria-label="add" 
-            onClick={() =>{
-                
-                CreateProducts({data: tempNewProduct})
-                .then(datos => console.log(datos))
-                .catch(datos => console.log(datos))
-            }}>
-            <SaveIcon />
+                onClick={() =>{
+                    handleCreateProduct()
+                }}
+            >
+                <SaveIcon />
+            </Fab>
+            <Fab color='error' sx={{position: 'absolute', bottom: 16, left: 18,}} aria-label="add" 
+                onClick={() =>{
+                    handleClose()
+                }}
+            >
+                <CloseIcon/>
           </Fab>
         </Box>
+        </Modal>
     )
 }
 
 const queryClient = new QueryClient();
 
-export default function NuevoProductoModal( {abrir = false, setOpen, }) {
-    const handleClose = () => {
-        setOpen(false);
-    }
+export default function NuevoProductoModal( {abrir, setOpen }) {
 
   return (
     <div>
-        <Modal
-            open={abrir}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <QueryClientProvider client={queryClient}>
-                <Example></Example>
-            </QueryClientProvider>
-        </Modal>
+        <QueryClientProvider client={queryClient}>
+            <Example abrir={abrir} setOpen={setOpen}/>
+        </QueryClientProvider>  
     </div>
   );
 }

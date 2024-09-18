@@ -118,6 +118,27 @@ export default function MiniDrawer() {
                     </ListItemButton>
                     <ListItemButton
                       onClick={() =>{
+                        navigate('/home/clients')
+                      }}
+                      sx={{
+                        minHeight: 48,
+                        justifyContent: open ? 'initial' : 'center',
+                        px: 2.5,
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : 'auto',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <InboxIcon/>
+                      </ListItemIcon>
+                      <ListItemText primary={'Clientes'} sx={{ opacity: open ? 1 : 0 }} />
+                    </ListItemButton>
+                    <ListItemButton
+                      onClick={() =>{
                         navigate('/home/users')
                       }}
                       sx={{
@@ -178,6 +199,27 @@ export default function MiniDrawer() {
                         <InboxIcon/>
                       </ListItemIcon>
                       <ListItemText primary={'Tipo de Producto'} sx={{ opacity: open ? 1 : 0 }} />
+                    </ListItemButton>
+                    <ListItemButton
+                      onClick={() =>{
+                        navigate('/home/attributes')
+                      }}
+                      sx={{
+                        minHeight: 48,
+                        justifyContent: open ? 'initial' : 'center',
+                        px: 2.5,
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : 'auto',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <InboxIcon/>
+                      </ListItemIcon>
+                      <ListItemText primary={'Atributos'} sx={{ opacity: open ? 1 : 0 }} />
                     </ListItemButton>
                     <ListItemButton
                       onClick={() =>{

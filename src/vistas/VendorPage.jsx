@@ -98,7 +98,7 @@ export default function VendorPage(){
                 <Button
                 variant="contained"
                 onClick={()=>{
-                    navigate('/reporteVendedor')
+                    navigate('/home/reporteVendedor')
                 }}>
                     Reportes</Button>
                 <Button

@@ -36,7 +36,7 @@ function useCreateTienda({token}){
       myHeaders.append("Content-Type", "application/json");
       myHeaders.append("Authorization", token);
       const raw = JSON.stringify({
-        "name": tienda.name
+        "name": tienda
       });
       const response = await fetch('http://34.234.73.134:8088/api/stores', {
         method: 'POST',

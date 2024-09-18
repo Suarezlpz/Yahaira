@@ -15,11 +15,8 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import { MaterialReactTable, useMaterialReactTable, MRT_EditActionButtons } from 'material-react-table';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import _ from 'lodash';
 import { storage } from '../utils/Storage';
-import AttributesModal from '../components/AtrtributesModal';
-import { NavLink, useNavigate } from 'react-router-dom';
 import {
   QueryClient,
   QueryClientProvider,
@@ -28,16 +25,17 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { 
-  useGetProductTypes,
-  useCreateProductTypes,
-  useUpdateProductTypes,
-  useDeleteProductTypes, } from '../services/ProductTypesServices';
+  useGetAttributes,
+  useCreateAttributes,
+  useUpdateAttributes,
+  useDeleteAttributes,
+} from '../services/AttributesServices';
 
 const validateRequired = (value) => !!value.length;
-function validateProductType(product_types) {
+function validateTienda(store) {
   return {
-    name: !validateRequired(product_types.name)
-      ? 'Ingrese el Nombre del Tipo de Producto'
+    name: !validateRequired(store.name)
+      ? 'Ingrese el Nombre del Atributp'
       : '',
   };
 }
@@ -47,9 +45,7 @@ const Example = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const userData = storage.get('user');
   const token = userData.token;
-  const [productTypes, setProductTypes] = useState([]);
-  const [openAttributesModal, setOpenAttributesModal] = useState(false);
-  const navigate = useNavigate();
+  const [tiendas, setTiendas] = useState([]);
 
   const columns = useMemo(
     () => [
@@ -79,60 +75,61 @@ const Example = () => {
 
   const {
     data: fetchedData = [],
-    isError: isLoadingTProductTypeError,
-    isFetching: isFetchingProductTypes,
-    isLoading: isLoadingProductTypes,
-  } = useGetProductTypes({token});
+    isError: isLoadingAttributeError,
+    isFetching: isFetchingAttribute,
+    isLoading: isLoadingAttribute,
+  } = useGetAttributes({token});
 
-  /*useEffect(() => {
+
+ /* useEffect(() => {
     if(fetchedData != ''){
-      let tempProductType = []
-      tempProductType = fetchedData.data.map((item) => {
+      let tempTienda = []
+      tempTienda = fetchedData.data.map((item) => {
         return item;
       })
-      setProductTypes(tempProductType)
+      setTiendas(tempTienda)
     }
-  }, [fetchedData, productTypes]);*/
+  }, [fetchedData, tiendas]);*/
 
   //call CREATE hook
-  const { mutateAsync: createProductType, isPending: isCreatingProductType } = useCreateProductTypes({token});
+  const { mutateAsync: createAttribute, isPending: isCreatingAttribute } = useCreateAttributes({token});
 
   //CREATE action
-  const handleCreateProductType = async ({ values, table }) => {
-    const newValidationErrors = validateProductType(values);
+  const handleCreateAttribute = async ({ values, table }) => {
+    const newValidationErrors = validateTienda(values);
     if (Object.values(newValidationErrors).some((error) => error)) {
       setValidationErrors(newValidationErrors);
       return;
     }
     setValidationErrors({});
-    await createProductType(values);
+    await createAttribute(values);
     table.setCreatingRow(null); //exit creating mode
   };
 
   //call UPDATE hook
-  const { mutateAsync: updateProductType, isPending: isUpdatingProductType } =
-  useUpdateProductTypes({token});
+  const { mutateAsync: updateAttribute, isPending: isUpdatingAttribute } =
+  useUpdateAttributes({token});
 
   //UPDATE action
-  const handleSaveProductType = async ({ values, table }) => {
-    const newValidationErrors = validateProductType(values);
+  const handleSaveAttribute = async ({ values, table }) => {
+    const newValidationErrors = validateTienda(values);
     if (Object.values(newValidationErrors).some((error) => error)) {
       setValidationErrors(newValidationErrors);
       return;
     }
     setValidationErrors({});
-    await updateProductType(values);
-    table.setEditingRow(null); 
+    await updateAttribute(values);
+    table.setEditingRow(null); //exit editing mode
   };
 
   //call DELETE hook
-  const { mutateAsync: deleteProductType, isPending: isDeletingProductType } =
-  useDeleteProductTypes({token});
+  const { mutateAsync: deleteAttribute, isPending: isDeletingAttribute } =
+  useDeleteAttributes({token});
 
   //DELETE action
   const openDeleteConfirmModal = (row) => {
-    if (window.confirm('¿Seguro de que quiere borrar este tipo de producto?')) {
-      deleteProductType(row.original.id);
+    if (window.confirm('¿Seguro de que quiere borrar este Atributo?')) {
+      deleteAttribute(row.original.id);
     }
   };
 
@@ -146,13 +143,13 @@ const Example = () => {
     enableFilters: false,
     enableDensityToggle: false,
     getRowId: (row) => row.id,
-    onCreatingRowSave: handleCreateProductType,
+    onCreatingRowSave: handleCreateAttribute,
     onCreatingRowCancel: () => setValidationErrors({}),
-    onEditingRowSave: handleSaveProductType,
+    onEditingRowSave: handleSaveAttribute,
     onEditingRowCancel: () => setValidationErrors({}),
     renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
-        <DialogTitle variant="h4">Editar Tipo de Producto</DialogTitle>
+        <DialogTitle variant="h4">Editar Atributo</DialogTitle>
         <DialogContent
           sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
         >
@@ -163,10 +160,10 @@ const Example = () => {
         </DialogActions>
       </>
     ),
-    muiToolbarAlertBannerProps: isLoadingTProductTypeError
+    muiToolbarAlertBannerProps: isLoadingAttributeError
       ? {
           color: 'error',
-          children: 'Error al cargar la data',
+          children: 'Error al cargar el Atributo',
         }
       : undefined,
     muiTableContainerProps: {
@@ -176,11 +173,6 @@ const Example = () => {
     },
     renderRowActions: ({ row, table }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
-        <Tooltip title="Atributos">
-          <IconButton onClick={() => {navigate('/home/attributes')}}>
-            <AddCircleIcon />
-          </IconButton>
-        </Tooltip>
         <Tooltip title="Editar">
           <IconButton onClick={() => table.setEditingRow(row)}>
             <EditIcon/>
@@ -195,7 +187,7 @@ const Example = () => {
     ),
     renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
-        <DialogTitle variant="h4">Crear Tipo de Producto</DialogTitle>
+        <DialogTitle variant="h4">Crear Nuevo Atributo</DialogTitle>
         <DialogContent
           sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
         >
@@ -210,10 +202,16 @@ const Example = () => {
       <Button
         variant="contained"
         onClick={() => {
-          table.setCreatingRow(true);
+          table.setCreatingRow(true); //simplest way to open the create row modal with no default values
+          //or you can pass in a row object to set default values with the `createRow` helper function
+          // table.setCreatingRow(
+          //   createRow(table, {
+          //     //optionally pass in default values for the new row, useful for nested data or other complex scenarios
+          //   }),
+          // );
         }}
       >
-        Crear Tipo de Producto
+        Crear Atributo
       </Button>
     ),
     initialState: {
@@ -224,24 +222,19 @@ const Example = () => {
       },
     },
     state: {
-      isLoading: isLoadingProductTypes,
-      isSaving: isCreatingProductType || isUpdatingProductType || isDeletingProductType,
-      showAlertBanner: isLoadingTProductTypeError,
-      showProgressBars: isFetchingProductTypes,
+      isLoading: isLoadingAttribute,
+      isSaving: isCreatingAttribute || isUpdatingAttribute || isDeletingAttribute,
+      showAlertBanner: isLoadingAttributeError,
+      showProgressBars: isFetchingAttribute,
     },
   });
 
-  return (
-    <>
-      <MaterialReactTable table={table} />
-      <AttributesModal abrir={openAttributesModal} setOpen={setOpenAttributesModal}></AttributesModal>
-    </>
-  )
+  return <MaterialReactTable table={table} />;
 };
 
 const queryClient = new QueryClient();
 
-export default function ProductTypesPage(){
+export default function AttributesPage(){
 
   const open = useAtomValue(openAtom);
 
